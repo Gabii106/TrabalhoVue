@@ -1,9 +1,9 @@
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
-import Home from './Home.vue'
-import CadastrarCurriculo from './CadastrarCurriculo.vue'
-import VerCurriculos from './VerCurriculos.vue'
+import Home from './components/HomePage.vue'
+import CadastrarCurriculo from './components/CadastrarCurriculo.vue'
+import VerCurriculos from './components/VerCurriculos.vue'
 
 const routes = [
   { path: '/', component: Home },
