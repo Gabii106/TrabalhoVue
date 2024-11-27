@@ -50,10 +50,18 @@
         </ul>
       </div>
 
-
       <div class="form-group">
         <label for="idiomas">Idiomas:</label>
-        <input type="text" id="idiomas" v-model="curriculo.idiomas" required>
+        <div class="idiomas-input">
+          <input type="text" id="idiomas" v-model="novoIdioma" placeholder="Digite um idioma" />
+          <button type="button" @click="adicionarIdioma">Adicionar</button>
+        </div>
+        <ul>
+          <li v-for="(idioma, index) in curriculo.idiomas" :key="index">
+            {{ idioma }}
+            <button type="button" @click="removerIdioma(index)">Remover</button>
+          </li>
+        </ul>
       </div>
 
       <div class="form-group">
@@ -89,7 +97,7 @@ export default {
           periodo: ''
         },
         habilidades: [],
-        idiomas: '',
+        idiomas: [],
         objetivo: ''
       },
       novaHabilidade: ''
@@ -107,6 +115,17 @@ export default {
     removerHabilidade(index) {
       this.curriculo.habilidades.splice(index, 1);
     },
+    adicionarIdioma() {
+      if (this.novoIdioma.trim()) {
+        this.curriculo.idiomas.push(this.novoIdioma.trim());
+        this.novoIdioma = ''; // Limpar o campo de entrada após adicionar
+      } else {
+        alert('Formato de idioma inválido!');
+      }
+    },
+    removerIdioma(index) {
+      this.curriculo.idiomas.splice(index, 1);
+    },
     async submitForm() {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
@@ -122,7 +141,7 @@ export default {
           formacao: { curso: '', instituicao: '', anoConclusao: null },
           experiencia: { empresa: '', cargo: '', periodo: '' },
           habilidades: [],
-          idiomas: '',
+          idiomas: [],
           objetivo: ''
         };
         alert('Currículo cadastrado com sucesso!');
@@ -182,16 +201,16 @@ li {
   margin-bottom: 5px;
 }
 
-.habilidades-input {
+.habilidades-input .idiomas-input {
   display: flex;
   gap: 10px;
 }
 
-.habilidades-input input {
+.habilidades-input .idiomas-input input {
   flex: 1;
 }
 
-.habilidades-input button {
+.habilidades-input .idiomas-input button {
   padding: 8px 12px;
   background-color: #42b983;
   color: white;
@@ -200,7 +219,7 @@ li {
   cursor: pointer;
 }
 
-.habilidades-input button:hover {
+.habilidades-input .idiomas-input button:hover {
   background-color: #3aa876;
 }
 </style>
