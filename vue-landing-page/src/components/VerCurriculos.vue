@@ -5,12 +5,25 @@
       Nenhum currículo cadastrado ainda.
     </div>
     <div v-else class="curriculos-list">
-      <div v-for="curriculo in curriculos" :key="curriculo.id" class="curriculo-item">
+      <div v-for="curriculo in curriculos" :key="curriculo._id" class="curriculo-item">
         <h3>{{ curriculo.nome }}</h3>
         <p><strong>E-mail:</strong> {{ curriculo.email }}</p>
         <p><strong>Telefone:</strong> {{ curriculo.telefone }}</p>
-        <p><strong>Formação:</strong> {{ curriculo.formacao.curso }} - {{ curriculo.formacao.instituicao }}</p>
-        <p><strong>Experiência:</strong> {{ curriculo.experiencia.cargo }} em {{ curriculo.experiencia.empresa }}</p>
+
+        <h4>Formações Acadêmicas:</h4>
+        <ul>
+          <li v-for="(formacao, index) in curriculo.formacoes" :key="index">
+            {{ formacao.curso }} - {{ formacao.instituicao }} ({{ formacao.anoConclusao }})
+          </li>
+        </ul>
+
+        <h4>Experiências Profissionais:</h4>
+        <ul>
+          <li v-for="(experiencia, index) in curriculo.experiencias" :key="index">
+            {{ experiencia.cargo }} em {{ experiencia.empresa }} ({{ experiencia.periodo }})
+          </li>
+        </ul>
+
         <button @click="verDetalhes(curriculo)">Ver Detalhes</button>
       </div>
     </div>
@@ -22,17 +35,34 @@
         <p><strong>E-mail:</strong> {{ curriculoSelecionado.email }}</p>
         <p><strong>Telefone:</strong> {{ curriculoSelecionado.telefone }}</p>
         <p><strong>Endereço:</strong> {{ curriculoSelecionado.endereco }}</p>
-        <h3>Formação Acadêmica</h3>
-        <p>{{ curriculoSelecionado.formacao.curso }} - {{ curriculoSelecionado.formacao.instituicao }} ({{ curriculoSelecionado.formacao.anoConclusao }})</p>
-        <h3>Experiência Profissional</h3>
-        <p>{{ curriculoSelecionado.experiencia.cargo }} em {{ curriculoSelecionado.experiencia.empresa }} ({{ curriculoSelecionado.experiencia.periodo }})</p>
+
+        <h3>Formações Acadêmicas</h3>
+        <ul>
+          <li v-for="(formacao, index) in curriculoSelecionado.formacoes" :key="index">
+            {{ formacao.curso }} - {{ formacao.instituicao }} ({{ formacao.anoConclusao }})
+          </li>
+        </ul>
+
+        <h3>Experiências Profissionais</h3>
+        <ul>
+          <li v-for="(experiencia, index) in curriculoSelecionado.experiencias" :key="index">
+            {{ experiencia.cargo }} em {{ experiencia.empresa }} ({{ experiencia.periodo }})
+          </li>
+        </ul>
+
         <h3>Habilidades</h3>
         <ul>
           <li v-for="(habilidade, index) in curriculoSelecionado.habilidades" :key="index">{{ habilidade }}</li>
         </ul>
-        <p><strong>Idiomas:</strong> {{ curriculoSelecionado.idiomas }}</p>
+
+        <h3>Idiomas</h3>
+        <ul>
+          <li v-for="(idioma, index) in curriculoSelecionado.idiomas" :key="index">{{ idioma }}</li>
+        </ul>
+
         <h3>Objetivo Profissional</h3>
         <p>{{ curriculoSelecionado.objetivo }}</p>
+
         <button @click="editarCurriculo">Editar</button>
         <button @click="excluirCurriculo">Excluir</button>
       </div>
@@ -58,7 +88,6 @@ export default {
         const apiUrl = import.meta.env.VITE_API_URL;
         const response = await axios.get(`${apiUrl}/curriculos`);
         this.curriculos = response.data; // Certifique-se de que o backend retorna um array de currículos
-        console.log(curriculos);
         this.loading = false;
       } catch (error) {
         console.error('Erro ao buscar currículos:', error);
