@@ -4,42 +4,88 @@
     <form @submit.prevent="submitForm">
       <div class="form-group">
         <label for="nome">Nome completo:</label>
-        <input type="text" id="nome" v-model="curriculo.nome" required>
+        <input type="text" id="nome" v-model="curriculo.nome" required />
       </div>
 
       <div class="form-group">
         <label for="email">E-mail:</label>
-        <input type="email" id="email" v-model="curriculo.email" required>
+        <input type="email" id="email" v-model="curriculo.email" required />
       </div>
 
       <div class="form-group">
         <label for="telefone">Telefone:</label>
-        <input type="tel" id="telefone" v-model="curriculo.telefone" required>
+        <input type="tel" id="telefone" v-model="curriculo.telefone" required />
       </div>
 
       <div class="form-group">
         <label for="endereco">Endereço completo:</label>
-        <input type="text" id="endereco" v-model="curriculo.endereco" required>
+        <input type="text" id="endereco" v-model="curriculo.endereco" required />
       </div>
 
+      <!-- Formação Acadêmica -->
       <div class="form-group">
-        <label for="formacao">Formação acadêmica:</label>
-        <input type="text" id="formacao" v-model="curriculo.formacao.curso" placeholder="Curso" required>
-        <input type="text" v-model="curriculo.formacao.instituicao" placeholder="Instituição" required>
-        <input type="number" v-model="curriculo.formacao.anoConclusao" placeholder="Ano de conclusão" required>
+        <label>Formação acadêmica:</label>
+        <div v-for="(formacao, index) in curriculo.formacoes" :key="index" class="formacao-item">
+          <input
+            type="text"
+            v-model="formacao.curso"
+            placeholder="Curso"
+            required
+          />
+          <input
+            type="text"
+            v-model="formacao.instituicao"
+            placeholder="Instituição"
+            required
+          />
+          <input
+            type="number"
+            v-model="formacao.anoConclusao"
+            placeholder="Ano de conclusão"
+            required
+          />
+          <button v-if="curriculo.formacoes.length > 1" type="button" @click="removerFormacao(index)">Remover</button>
+        </div>
+        <button type="button" @click="adicionarFormacao">Adicionar Formação</button>
       </div>
 
+      <!-- Experiência Profissional -->
       <div class="form-group">
-        <label for="experiencia">Experiência profissional:</label>
-        <input type="text" id="experiencia" v-model="curriculo.experiencia.empresa" placeholder="Empresa" required>
-        <input type="text" v-model="curriculo.experiencia.cargo" placeholder="Cargo" required>
-        <input type="text" v-model="curriculo.experiencia.periodo" placeholder="Período" required>
+        <label>Experiência profissional:</label>
+        <div v-for="(experiencia, index) in curriculo.experiencias" :key="index" class="experiencia-item">
+          <input
+            type="text"
+            v-model="experiencia.empresa"
+            placeholder="Empresa"
+            required
+          />
+          <input
+            type="text"
+            v-model="experiencia.cargo"
+            placeholder="Cargo"
+            required
+          />
+          <input
+            type="text"
+            v-model="experiencia.periodo"
+            placeholder="Período"
+            required
+          />
+          <button v-if="curriculo.experiencias.length > 1" type="button" @click="removerExperiencia(index)">Remover</button>
+        </div>
+        <button type="button" @click="adicionarExperiencia">Adicionar Experiência</button>
       </div>
 
+      <!-- Habilidades -->
       <div class="form-group">
         <label for="habilidades">Habilidades:</label>
         <div class="habilidades-input">
-          <input type="text" id="habilidades" v-model="novaHabilidade" placeholder="Digite uma habilidade" />
+          <input
+            type="text"
+            id="habilidades"
+            v-model="novaHabilidade"
+            placeholder="Digite uma habilidade"
+          />
           <button type="button" @click="adicionarHabilidade">Adicionar</button>
         </div>
         <ul>
@@ -50,10 +96,16 @@
         </ul>
       </div>
 
+      <!-- Idiomas -->
       <div class="form-group">
         <label for="idiomas">Idiomas:</label>
         <div class="idiomas-input">
-          <input type="text" id="idiomas" v-model="novoIdioma" placeholder="Digite um idioma" />
+          <input
+            type="text"
+            id="idiomas"
+            v-model="novoIdioma"
+            placeholder="Digite um idioma"
+          />
           <button type="button" @click="adicionarIdioma">Adicionar</button>
         </div>
         <ul>
@@ -75,41 +127,38 @@
 </template>
 
 <script>
-import axios from 'axios';
+import axios from "axios";
 
 export default {
-  name: 'CadastrarCurriculo',
+  name: "CadastrarCurriculo",
   data() {
     return {
       curriculo: {
-        nome: '',
-        email: '',
-        telefone: '',
-        endereco: '',
-        formacao: {
-          curso: '',
-          instituicao: '',
-          anoConclusao: null
-        },
-        experiencia: {
-          empresa: '',
-          cargo: '',
-          periodo: ''
-        },
+        nome: "",
+        email: "",
+        telefone: "",
+        endereco: "",
+        formacoes: [
+          { curso: "", instituicao: "", anoConclusao: "" },
+        ],
+        experiencias: [
+          { empresa: "", cargo: "", periodo: "" },
+        ],
         habilidades: [],
         idiomas: [],
-        objetivo: ''
+        objetivo: "",
       },
-      novaHabilidade: ''
-    }
+      novaHabilidade: "",
+      novoIdioma: "",
+    };
   },
   methods: {
     adicionarHabilidade() {
       if (this.novaHabilidade.trim()) {
         this.curriculo.habilidades.push(this.novaHabilidade.trim());
-        this.novaHabilidade = ''; // Limpar o campo de entrada após adicionar
+        this.novaHabilidade = "";
       } else {
-        alert('Digite uma habilidade válida!');
+        alert("Digite uma habilidade válida!");
       }
     },
     removerHabilidade(index) {
@@ -118,42 +167,62 @@ export default {
     adicionarIdioma() {
       if (this.novoIdioma.trim()) {
         this.curriculo.idiomas.push(this.novoIdioma.trim());
-        this.novoIdioma = ''; // Limpar o campo de entrada após adicionar
+        this.novoIdioma = "";
       } else {
-        alert('Formato de idioma inválido!');
+        alert("Formato de idioma inválido!");
       }
     },
     removerIdioma(index) {
       this.curriculo.idiomas.splice(index, 1);
     },
+    adicionarFormacao() {
+      this.curriculo.formacoes.push({
+        curso: "",
+        instituicao: "",
+        anoConclusao: "",
+      });
+    },
+    removerFormacao(index) {
+      this.curriculo.formacoes.splice(index, 1);
+    },
+    adicionarExperiencia() {
+      this.curriculo.experiencias.push({
+        empresa: "",
+        cargo: "",
+        periodo: "",
+      });
+    },
+    removerExperiencia(index) {
+      this.curriculo.experiencias.splice(index, 1);
+    },
     async submitForm() {
       try {
         const apiUrl = import.meta.env.VITE_API_URL;
 
-        const response = await axios.post(`${apiUrl}/curriculos`, this.curriculo);
-        console.log('Resposta da API:', response.data);
-
-        this.curriculo = {
-          nome: '',
-          email: '',
-          telefone: '',
-          endereco: '',
-          formacao: { curso: '', instituicao: '', anoConclusao: null },
-          experiencia: { empresa: '', cargo: '', periodo: '' },
-          habilidades: [],
-          idiomas: [],
-          objetivo: ''
+        // Removendo objetos vazios para evitar o erro de bad request
+        const payload = {
+          ...this.curriculo,
+          formacoes: this.curriculo.formacoes.filter(
+            (f) => f.curso && f.instituicao && f.anoConclusao
+          ),
+          experiencias: this.curriculo.experiencias.filter(
+            (e) => e.empresa && e.cargo && e.periodo
+          ),
         };
-        alert('Currículo cadastrado com sucesso!');
-      } catch (error) {
-        console.error('Erro ao cadastrar o currículo:', error);
-        alert('Houve um erro ao cadastrar o currículo. Tente novamente.');
-      }
-    }
-  }
 
-}
+        const response = await axios.post(`${apiUrl}/curriculos`, payload);
+        console.log("Resposta da API:", response.data);
+
+        alert("Currículo cadastrado com sucesso!");
+      } catch (error) {
+        console.error("Erro ao cadastrar o currículo:", error);
+        alert("Houve um erro ao cadastrar o currículo. Tente novamente.");
+      }
+    },
+  },
+};
 </script>
+
 
 <style scoped>
 .cadastrar-curriculo {
