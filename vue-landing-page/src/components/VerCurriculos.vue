@@ -41,55 +41,57 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   name: 'VerCurriculos',
   data() {
     return {
-      curriculos: [
-        {
-          id: 1,
-          nome: 'João Silva',
-          email: 'joao@email.com',
-          telefone: '(11) 99999-9999',
-          endereco: 'Rua A, 123 - São Paulo, SP',
-          formacao: {
-            curso: 'Ciência da Computação',
-            instituicao: 'Universidade XYZ',
-            anoConclusao: 2020
-          },
-          experiencia: {
-            empresa: 'Tech Solutions',
-            cargo: 'Desenvolvedor Full Stack',
-            periodo: 'Jan 2021 - Presente'
-          },
-          habilidades: ['JavaScript', 'Vue.js', 'Node.js', 'MongoDB'],
-          idiomas: 'Inglês (Fluente), Espanhol (Intermediário)',
-          objetivo: 'Busco uma oportunidade para aplicar minhas habilidades em desenvolvimento web e contribuir para projetos inovadores.'
-        },
-        // Adicione mais currículos mockados aqui
-      ],
-      curriculoSelecionado: null
-    }
+      curriculos: [],
+      curriculoSelecionado: null,
+      loading: true,
+    };
   },
   methods: {
+    async fetchCurriculos() {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${apiUrl}/curriculos`);
+        this.curriculos = response.data; // Certifique-se de que o backend retorna um array de currículos
+        console.log(curriculos);
+        this.loading = false;
+      } catch (error) {
+        console.error('Erro ao buscar currículos:', error);
+        this.loading = false;
+      }
+    },
     verDetalhes(curriculo) {
-      this.curriculoSelecionado = curriculo
+      this.curriculoSelecionado = curriculo;
     },
     fecharModal() {
-      this.curriculoSelecionado = null
+      this.curriculoSelecionado = null;
     },
-    editarCurriculo() {
-      // Implementar lógica de edição
-      console.log('Editar currículo:', this.curriculoSelecionado)
+    async excluirCurriculo() {
+      if (!this.curriculoSelecionado) return;
+      const confirmacao = confirm('Tem certeza de que deseja excluir este currículo?');
+      if (!confirmacao) return;
+
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        await axios.delete(`${apiUrl}/curriculos/${this.curriculoSelecionado._id}`);
+        this.curriculos = this.curriculos.filter(c => c._id !== this.curriculoSelecionado._id);
+        this.fecharModal();
+        alert('Currículo excluído com sucesso!');
+      } catch (error) {
+        console.error('Erro ao excluir currículo:', error);
+        alert('Houve um erro ao excluir o currículo. Tente novamente.');
+      }
     },
-    excluirCurriculo() {
-      // Implementar lógica de exclusão
-      console.log('Excluir currículo:', this.curriculoSelecionado)
-      this.curriculos = this.curriculos.filter(c => c.id !== this.curriculoSelecionado.id)
-      this.fecharModal()
-    }
-  }
-}
+  },
+  async mounted() {
+    await this.fetchCurriculos();
+  },
+};
 </script>
 
 <style scoped>
