@@ -52,7 +52,7 @@
         <p><strong>Idiomas:</strong> {{ curriculoSelecionado.idiomas }}</p>
         <h3>Objetivo Profissional</h3>
         <p>{{ curriculoSelecionado.objetivo }}</p>
-        <button @click="editarCurriculo">Editar</button>
+        <button @click="navegarParaEdicao(curriculoSelecionado)">Editar</button>
         <button @click="excluirCurriculo">Excluir</button>
       </div>
     </div>
@@ -60,6 +60,8 @@
 </template>
 
 <script>
+import axios from "axios";
+
 const apiUrl = import.meta.env.VITE_API_URL;
 
 export default {
@@ -68,16 +70,56 @@ export default {
     return {
       curriculos: [],
       curriculoSelecionado: null,
+      loading: true,
     };
   },
   methods: {
+    async fetchCurriculos() {
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        const response = await axios.get(`${apiUrl}/curriculos`);
+        this.curriculos = response.data; // Certifique-se de que o backend retorna um array de currículos
+        console.log(curriculos);
+        this.loading = false;
+      } catch (error) {
+        console.error("Erro ao buscar currículos:", error);
+        this.loading = false;
+      }
+    },
     verDetalhes(curriculo) {
       this.curriculoSelecionado = curriculo;
     },
     fecharModal() {
       this.curriculoSelecionado = null;
     },
-    editarCurriculo() {
+    navegarParaEdicao(curriculo) {
+      if (!curriculo) return;
+
+      this.$router.push({
+        name: "EditarCurriculo",
+        params: { id: curriculo.id }, // Para buscar pelo ID no componente de edição
+        state: { curriculo: curriculo }, // Ou passar todo o objeto se permitido
+      });
+    },
+    async excluirCurriculo() {
+      if (!this.curriculoSelecionado) return;
+      const confirmacao = confirm("Tem certeza de que deseja excluir este currículo?");
+      if (!confirmacao) return;
+
+      try {
+        const apiUrl = import.meta.env.VITE_API_URL;
+        await axios.delete(`${apiUrl}/curriculos/${this.curriculoSelecionado._id}`);
+        this.curriculos = this.curriculos.filter(
+          (c) => c._id !== this.curriculoSelecionado._id
+        );
+        this.fecharModal();
+        alert("Currículo excluído com sucesso!");
+      } catch (error) {
+        console.error("Erro ao excluir currículo:", error);
+        alert("Houve um erro ao excluir o currículo. Tente novamente.");
+      }
+    },
+    async editarCurriculo() {
       console.log("Editar currículo:", this.curriculoSelecionado);
       if (this.curriculoSelecionado) {
         // Envia os dados atualizados para o servidor
@@ -107,14 +149,9 @@ export default {
         console.error("Nenhum currículo selecionado para edição.");
       }
     },
-    excluirCurriculo() {
-      // Implementar lógica de exclusão
-      console.log("Excluir currículo:", this.curriculoSelecionado);
-      this.curriculos = this.curriculos.filter(
-        (c) => c.id !== this.curriculoSelecionado.id
-      );
-      this.fecharModal();
-    },
+  },
+  async mounted() {
+    await this.fetchCurriculos();
   },
 };
 </script>
