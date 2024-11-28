@@ -1,16 +1,20 @@
 <template>
   <div class="ver-curriculos">
     <h2>Currículos Cadastrados</h2>
-    <div v-if="curriculos.length === 0">
-      Nenhum currículo cadastrado ainda.
-    </div>
+    <div v-if="curriculos.length === 0">Nenhum currículo cadastrado ainda.</div>
     <div v-else class="curriculos-list">
       <div v-for="curriculo in curriculos" :key="curriculo.id" class="curriculo-item">
         <h3>{{ curriculo.nome }}</h3>
         <p><strong>E-mail:</strong> {{ curriculo.email }}</p>
         <p><strong>Telefone:</strong> {{ curriculo.telefone }}</p>
-        <p><strong>Formação:</strong> {{ curriculo.formacao.curso }} - {{ curriculo.formacao.instituicao }}</p>
-        <p><strong>Experiência:</strong> {{ curriculo.experiencia.cargo }} em {{ curriculo.experiencia.empresa }}</p>
+        <p>
+          <strong>Formação:</strong> {{ curriculo.formacao.curso }} -
+          {{ curriculo.formacao.instituicao }}
+        </p>
+        <p>
+          <strong>Experiência:</strong> {{ curriculo.experiencia.cargo }} em
+          {{ curriculo.experiencia.empresa }}
+        </p>
         <button @click="verDetalhes(curriculo)">Ver Detalhes</button>
       </div>
     </div>
@@ -23,12 +27,27 @@
         <p><strong>Telefone:</strong> {{ curriculoSelecionado.telefone }}</p>
         <p><strong>Endereço:</strong> {{ curriculoSelecionado.endereco }}</p>
         <h3>Formação Acadêmica</h3>
-        <p>{{ curriculoSelecionado.formacao.curso }} - {{ curriculoSelecionado.formacao.instituicao }} ({{ curriculoSelecionado.formacao.anoConclusao }})</p>
+        <p>
+          {{ curriculoSelecionado.formacao.curso }} -
+          {{ curriculoSelecionado.formacao.instituicao }} ({{
+            curriculoSelecionado.formacao.anoConclusao
+          }})
+        </p>
         <h3>Experiência Profissional</h3>
-        <p>{{ curriculoSelecionado.experiencia.cargo }} em {{ curriculoSelecionado.experiencia.empresa }} ({{ curriculoSelecionado.experiencia.periodo }})</p>
+        <p>
+          {{ curriculoSelecionado.experiencia.cargo }} em
+          {{ curriculoSelecionado.experiencia.empresa }} ({{
+            curriculoSelecionado.experiencia.periodo
+          }})
+        </p>
         <h3>Habilidades</h3>
         <ul>
-          <li v-for="(habilidade, index) in curriculoSelecionado.habilidades" :key="index">{{ habilidade }}</li>
+          <li
+            v-for="(habilidade, index) in curriculoSelecionado.habilidades"
+            :key="index"
+          >
+            {{ habilidade }}
+          </li>
         </ul>
         <p><strong>Idiomas:</strong> {{ curriculoSelecionado.idiomas }}</p>
         <h3>Objetivo Profissional</h3>
@@ -41,55 +60,63 @@
 </template>
 
 <script>
+const apiUrl = import.meta.env.VITE_API_URL;
+
 export default {
-  name: 'VerCurriculos',
+  name: "VerCurriculos",
   data() {
     return {
-      curriculos: [
-        {
-          id: 1,
-          nome: 'João Silva',
-          email: 'joao@email.com',
-          telefone: '(11) 99999-9999',
-          endereco: 'Rua A, 123 - São Paulo, SP',
-          formacao: {
-            curso: 'Ciência da Computação',
-            instituicao: 'Universidade XYZ',
-            anoConclusao: 2020
-          },
-          experiencia: {
-            empresa: 'Tech Solutions',
-            cargo: 'Desenvolvedor Full Stack',
-            periodo: 'Jan 2021 - Presente'
-          },
-          habilidades: ['JavaScript', 'Vue.js', 'Node.js', 'MongoDB'],
-          idiomas: 'Inglês (Fluente), Espanhol (Intermediário)',
-          objetivo: 'Busco uma oportunidade para aplicar minhas habilidades em desenvolvimento web e contribuir para projetos inovadores.'
-        },
-        // Adicione mais currículos mockados aqui
-      ],
-      curriculoSelecionado: null
-    }
+      curriculos: [],
+      curriculoSelecionado: null,
+    };
   },
   methods: {
     verDetalhes(curriculo) {
-      this.curriculoSelecionado = curriculo
+      this.curriculoSelecionado = curriculo;
     },
     fecharModal() {
-      this.curriculoSelecionado = null
+      this.curriculoSelecionado = null;
     },
     editarCurriculo() {
-      // Implementar lógica de edição
-      console.log('Editar currículo:', this.curriculoSelecionado)
+      console.log("Editar currículo:", this.curriculoSelecionado);
+      if (this.curriculoSelecionado) {
+        // Envia os dados atualizados para o servidor
+        axios
+          .put(
+            `${apiUrl}/curriculos/${this.curriculoSelecionado.id}`,
+            this.curriculoSelecionado
+          )
+          .then((response) => {
+            console.log("Currículo atualizado com sucesso:", response.data);
+
+            // Atualiza a lista local de currículos com os dados atualizados
+            const index = this.curriculos.findIndex(
+              (c) => c.id === this.curriculoSelecionado.id
+            );
+            if (index !== -1) {
+              this.curriculos[index] = { ...this.curriculoSelecionado };
+            }
+
+            // Fecha o modal após a edição
+            this.fecharModal();
+          })
+          .catch((error) => {
+            console.error("Erro ao atualizar o currículo:", error);
+          });
+      } else {
+        console.error("Nenhum currículo selecionado para edição.");
+      }
     },
     excluirCurriculo() {
       // Implementar lógica de exclusão
-      console.log('Excluir currículo:', this.curriculoSelecionado)
-      this.curriculos = this.curriculos.filter(c => c.id !== this.curriculoSelecionado.id)
-      this.fecharModal()
-    }
-  }
-}
+      console.log("Excluir currículo:", this.curriculoSelecionado);
+      this.curriculos = this.curriculos.filter(
+        (c) => c.id !== this.curriculoSelecionado.id
+      );
+      this.fecharModal();
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -119,7 +146,7 @@ export default {
   width: 100%;
   height: 100%;
   overflow: auto;
-  background-color: rgba(0,0,0,0.4);
+  background-color: rgba(0, 0, 0, 0.4);
 }
 
 .modal-content {
