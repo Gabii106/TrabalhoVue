@@ -22,52 +22,61 @@
         <input type="text" id="endereco" v-model="curriculo.endereco" required />
       </div>
 
+      <!-- Formação Acadêmica -->
       <div class="form-group">
-        <label for="formacao">Formação acadêmica:</label>
-        <input
-          type="text"
-          id="formacao"
-          v-model="curriculo.formacao.curso"
-          placeholder="Curso"
-          required
-        />
-        <input
-          type="text"
-          v-model="curriculo.formacao.instituicao"
-          placeholder="Instituição"
-          required
-        />
-        <input
-          type="number"
-          v-model="curriculo.formacao.anoConclusao"
-          placeholder="Ano de conclusão"
-          required
-        />
+        <label>Formação acadêmica:</label>
+        <div v-for="(formacao, index) in curriculo.formacoes" :key="index" class="formacao-item">
+          <input
+            type="text"
+            v-model="formacao.curso"
+            placeholder="Curso"
+            required
+          />
+          <input
+            type="text"
+            v-model="formacao.instituicao"
+            placeholder="Instituição"
+            required
+          />
+          <input
+            type="number"
+            v-model="formacao.anoConclusao"
+            placeholder="Ano de conclusão"
+            required
+          />
+          <button v-if="curriculo.formacoes.length > 1" type="button" @click="removerFormacao(index)">Remover</button>
+        </div>
+        <button type="button" @click="adicionarFormacao">Adicionar Formação</button>
       </div>
 
+      <!-- Experiência Profissional -->
       <div class="form-group">
-        <label for="experiencia">Experiência profissional:</label>
-        <input
-          type="text"
-          id="experiencia"
-          v-model="curriculo.experiencia.empresa"
-          placeholder="Empresa"
-          required
-        />
-        <input
-          type="text"
-          v-model="curriculo.experiencia.cargo"
-          placeholder="Cargo"
-          required
-        />
-        <input
-          type="text"
-          v-model="curriculo.experiencia.periodo"
-          placeholder="Período"
-          required
-        />
+        <label>Experiência profissional:</label>
+        <div v-for="(experiencia, index) in curriculo.experiencias" :key="index" class="experiencia-item">
+          <input
+            type="text"
+            v-model="experiencia.empresa"
+            placeholder="Empresa"
+            required
+          />
+          <input
+            type="text"
+            v-model="experiencia.cargo"
+            placeholder="Cargo"
+            required
+          />
+          <input
+            type="text"
+            v-model="experiencia.periodo"
+            placeholder="Período"
+            required
+          />
+          <button v-if="curriculo.experiencias.length > 1" type="button" @click="removerExperiencia(index)">Remover</button>
+        </div>
+        <button type="button" @click="adicionarExperiencia">Adicionar Experiência</button>
       </div>
 
+      <!-- Habilidades -->
       <div class="form-group">
         <label for="habilidades">Habilidades:</label>
         <div class="habilidades-input">
@@ -87,6 +96,7 @@
         </ul>
       </div>
 
+      <!-- Idiomas -->
       <div class="form-group">
         <label for="idiomas">Idiomas:</label>
         <div class="idiomas-input">

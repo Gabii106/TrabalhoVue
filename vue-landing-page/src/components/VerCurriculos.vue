@@ -107,7 +107,7 @@ export default {
     navegarParaEdicao(curriculo) {
       if (!curriculo) return;
 
-      this.$router.push({
+      this.$router.push('/editar/:id',{
         name: "EditarCurriculo",
         params: { id: curriculo.id }, // Para buscar pelo ID no componente de edição
         state: { curriculo: curriculo }, // Ou passar todo o objeto se permitido
@@ -129,36 +129,6 @@ export default {
       } catch (error) {
         console.error("Erro ao excluir currículo:", error);
         alert("Houve um erro ao excluir o currículo. Tente novamente.");
-      }
-    },
-    async editarCurriculo() {
-      console.log("Editar currículo:", this.curriculoSelecionado);
-      if (this.curriculoSelecionado) {
-        // Envia os dados atualizados para o servidor
-        axios
-          .put(
-            `${apiUrl}/curriculos/${this.curriculoSelecionado.id}`,
-            this.curriculoSelecionado
-          )
-          .then((response) => {
-            console.log("Currículo atualizado com sucesso:", response.data);
-
-            // Atualiza a lista local de currículos com os dados atualizados
-            const index = this.curriculos.findIndex(
-              (c) => c.id === this.curriculoSelecionado.id
-            );
-            if (index !== -1) {
-              this.curriculos[index] = { ...this.curriculoSelecionado };
-            }
-
-            // Fecha o modal após a edição
-            this.fecharModal();
-          })
-          .catch((error) => {
-            console.error("Erro ao atualizar o currículo:", error);
-          });
-      } else {
-        console.error("Nenhum currículo selecionado para edição.");
       }
     },
   },
